@@ -37,6 +37,16 @@ class CalculateCommissionFee {
             }
         }
     }
+
+    public function manageLegalPerson($userData) {
+        if("cash_in" == $userData[3]) {
+            $this->manageCashIn($userData);
+        } else if ("cash_out" == $userData[3]) {
+            $this->manageCashOutLegalPerson($userData);
+        } else {
+            die('Procedure type is not described, user ID: ' . $value[1]);
+        }
+    }
     
     // User identify: natural and legal 
     public function manageNaturalPerson($userData, $allUsersData) {
@@ -44,16 +54,6 @@ class CalculateCommissionFee {
             $this->manageCashIn($userData);
         } else if ("cash_out" == $userData[3]) {
             $this->manageCashOutNaturalPerson($userData, $allUsersData);
-        } else {
-            die('Procedure type is not described, user ID: ' . $value[1]);
-        }
-    }
-
-    public function manageLegalPerson($userData) {
-        if("cash_in" == $userData[3]) {
-            $this->manageCashIn($userData);
-        } else if ("cash_out" == $userData[3]) {
-            $this->manageCashOutLegalPerson($userData);
         } else {
             die('Procedure type is not described, user ID: ' . $value[1]);
         }
@@ -75,6 +75,27 @@ class CalculateCommissionFee {
         } else {
             // if more, result commission fee will be 5Eur
             $result = number_format(5, 2, '.', '');
+        }
+        $this->commissionFeesResult[] = $result;
+    }
+
+     // Manage cash out with legal user type
+     public function manageCashOutLegalPerson($userData) {
+        
+        $calculatedCommissionFee = ($userData[4] * $this->commissionFeeCashOut) / 100;
+
+        // convert minCommissionFee -> 0.5Eur to descriped currencies (if it's Eur, method return the same value -> 0.5Eur)
+        $minCommissionFee = $this->currencyConverter($this->minCommissionFeeInEuroCashOut, $userData[5]);
+
+        // Checking if calculatedCommissionFee is more than minCommissionFee
+        if($calculatedCommissionFee > $minCommissionFee) {
+            // if more, it's rounded to smallest currency item to upper bound (for example: 0.523Eur to 0.53Eur)
+            //ceil - round numbers
+            $result = $calculatedCommissionFee;
+            $result = number_format(ceil($result * 100) / 100, 2, '.', '');
+        } else {
+             // if not more, result of commission fee will be 0.50Eur
+            $result = number_format($minCommissionFee, 2, '.', '');
         }
         $this->commissionFeesResult[] = $result;
     }
@@ -138,25 +159,15 @@ class CalculateCommissionFee {
         }
     }
 
-    // Manage cash out with legal user type
-    public function manageCashOutLegalPerson($userData) {
-        
-        $calculatedCommissionFee = ($userData[4] * $this->commissionFeeCashOut) / 100;
-
-        // convert minCommissionFee -> 0.5Eur to descriped currencies (if it's Eur, method return the same value -> 0.5Eur)
-        $minCommissionFee = $this->currencyConverter($this->minCommissionFeeInEuroCashOut, $userData[5]);
-
-        // Checking if calculatedCommissionFee is more than minCommissionFee
-        if($calculatedCommissionFee > $minCommissionFee) {
-            // if more, it's rounded to smallest currency item to upper bound (for example: 0.523Eur to 0.53Eur)
-            //ceil - round numbers
-            $result = $calculatedCommissionFee;
-            $result = number_format(ceil($result * 100) / 100, 2, '.', '');
-        } else {
-             // if not more, result of commission fee will be 0.50Eur
-            $result = number_format($minCommissionFee, 2, '.', '');
-        }
-        $this->commissionFeesResult[] = $result;
+    //  get timestamp and remove encoding symbols
+    public function removeEncodingSymbols($date) {
+        // Remove encoding symbols from string begin
+        // pack - pack data into binary string
+        // substr - return part of a string
+        if(substr($date,0,3) == pack("CCC",0xef,0xbb,0xbf)) {
+            $date = substr($date, 3);
+        };
+        return $date;
     }
 
     // method converting money to currencies in input.csv file
@@ -171,16 +182,7 @@ class CalculateCommissionFee {
             return $money;
         }
     }
-    //  get timestamp and remove encoding symbols
-    public function removeEncodingSymbols($date) {
-        // Remove encoding symbols from string begin
-        // pack - pack data into binary string
-        // substr - return part of a string
-        if(substr($date,0,3) == pack("CCC",0xef,0xbb,0xbf)) {
-            $date = substr($date, 3);
-        };
-        return $date;
-    }
+    
 
     // method show results 
     public function showResults() {
