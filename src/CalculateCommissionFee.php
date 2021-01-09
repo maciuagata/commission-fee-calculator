@@ -45,7 +45,7 @@ class CalculateCommissionFee {
         } else if ("cash_out" == $userData[3]) {
             $this->manageCashOutNaturalPerson($userData, $allUsersData);
         } else {
-            die('Transaction type is not described, user ID: ' . $value[1]);
+            die('Procedure type is not described, user ID: ' . $value[1]);
         }
     }
 
@@ -55,7 +55,7 @@ class CalculateCommissionFee {
         } else if ("cash_out" == $userData[3]) {
             $this->manageCashOutLegal($userData);
         } else {
-            die('Transaction type is not described, user ID: ' . $value[1]);
+            die('Procedure type is not described, user ID: ' . $value[1]);
         }
     }
 
@@ -64,7 +64,7 @@ class CalculateCommissionFee {
         
         $calculatedCommissionFee = ($userData[4] * $this->commissionFeeCashIn) / 100;
 
-        // convert maxCommissionFee -> 5Eur to descriped currencies (if it's Eur, method return the same value -> 5Eur)
+        // convert maxCommissionFee 
         $maxCommissionFee = $this->currencyConverter($this->maxCommissionFeeInEuroCashIn, $userData[5]);
         
         // Check if calculatedCommissionFee is not more than maxCommissionFee
@@ -109,7 +109,7 @@ class CalculateCommissionFee {
         }
 
         // If counttimes is less than discountRules(in this case 3 times), the user didn't exceed 
-        // 3 cashout procedure per week rule, so he will get discount
+        // 3 cash out procedure per week will get discount
         if($this->discountRules > $countTimes) {
             // convert free of charge amount(1000Eur) to described currency
             $freeOfCharge = $this->currencyConverter($this->freeOfChargeAmount, $userData[5]);
