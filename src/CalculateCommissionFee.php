@@ -17,7 +17,7 @@ class CalculateCommissionFee {
     private $freeOfChargeAmount = 1000;
     private $commissionFeesResult= [];
     
-   
+   // start calculate data
     public function inputDataInFile($file) {
         $input = new CsvReader;
         $inputData = $input->readCsv($file);
@@ -53,7 +53,7 @@ class CalculateCommissionFee {
         if("cash_in" == $userData[3]) {
             $this->manageCashIn($userData);
         } else if ("cash_out" == $userData[3]) {
-            $this->manageCashOutLegal($userData);
+            $this->manageCashOutLegalPerson($userData);
         } else {
             die('Procedure type is not described, user ID: ' . $value[1]);
         }
@@ -73,7 +73,7 @@ class CalculateCommissionFee {
             $result = $calculatedCommissionFee;
             $result = number_format(ceil($result * 100) / 100, 2, '.', '');
         } else {
-            // if more, result commission fee will be 5.00Eur
+            // if more, result commission fee will be 5Eur
             $result = number_format(5, 2, '.', '');
         }
         $this->commissionFeesResult[] = $result;
@@ -99,8 +99,7 @@ class CalculateCommissionFee {
 
         $countTimes = 0;
 
-        // Get all user procedures dates timestamps and if this timestamp are between current procedure 
-        // date and current procedure date before 1 week, count times
+        // Get all user procedures dates timestamps and if this timestamp are between current procedure date and current procedure date before 1 week, count times
         foreach($userProcedures as $procedure) {
             $procedureTimestamp = strtotime($this->removeEncodingSymbols($procedure[0]));
             if ($procedureTimestamp < $currentDateTimestamp && $procedureTimestamp > $timestampBeforeOneWeek) {
@@ -130,7 +129,7 @@ class CalculateCommissionFee {
             }
 
         } else {
-            // If counttimes is more than discountRules(in this case 3 times)
+            // If counttimes is more than discountRules(3 times)
             // Calculating fees from all amount
             $amountToFee = $userData[4];
             $calculatedCommissionFee = ($amountToFee * $this->commissionFeeCashOut) / 100;
@@ -140,7 +139,7 @@ class CalculateCommissionFee {
     }
 
     // Manage cash out with legal user type
-    public function manageCashOutLegal($userData) {
+    public function manageCashOutLegalPerson($userData) {
         
         $calculatedCommissionFee = ($userData[4] * $this->commissionFeeCashOut) / 100;
 
@@ -160,7 +159,7 @@ class CalculateCommissionFee {
         $this->commissionFeesResult[] = $result;
     }
 
-    // Method converting money to currencies in input.csv file
+    // method converting money to currencies in input.csv file
     public function currencyConverter($money, $currency) {
         // trim is strip whitespace from the beginning and end of a string
         $currency = trim($currency);
@@ -183,6 +182,7 @@ class CalculateCommissionFee {
         return $date;
     }
 
+    // method show results 
     public function showResults() {
         foreach($this->commissionFeesResult as $value) {
             echo $value;
