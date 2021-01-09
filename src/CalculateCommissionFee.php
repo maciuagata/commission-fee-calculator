@@ -81,7 +81,7 @@ class CalculateCommissionFee {
 
     // Manage cash out with natural user
     public function manageCashOutNaturalPerson($userData, $allUsersData) {
-        // Create an array and put in that array only current users procedures
+        // create an array and put in that array only current users procedures
         $userProcedures = [];
         foreach($allUsersData as $user) {
             if($userData[1] == $user[1] && 'natural' == $user[2] && 'cash_out' == $user[3]) {
@@ -108,13 +108,12 @@ class CalculateCommissionFee {
             }     
         }
 
-        // If counttimes is less than discountRules(in this case 3 times), the user didn't exceed 
-        // 3 cash out procedure per week will get discount
+        // If countTimes is less than discountRules(3 times) and user didn't exceed 3 cash out procedure per week will get discount
         if($this->discountRules > $countTimes) {
             // convert free of charge amount(1000Eur) to described currency
             $freeOfCharge = $this->currencyConverter($this->freeOfChargeAmount, $userData[5]);
 
-            // If cash out procedure amount is not more than $freeOfCharge(1000Eur) commission fee is 0,00Eur
+            // if cash out procedure amount is not more than $freeOfCharge(1000Eur) commission fee is 0,00Eur
             if($userData[4] <= $freeOfCharge) {
                 $result = number_format(0, 2, '.', '');
                 
@@ -175,8 +174,8 @@ class CalculateCommissionFee {
     }
     //  get timestamp and remove encoding symbols
     public function removeEncodingSymbols($date) {
-        //Remove encoding symbols from string begin
-        //pack - pack data into binary string
+        // Remove encoding symbols from string begin
+        // pack - pack data into binary string
         // substr - return part of a string
         if(substr($date,0,3) == pack("CCC",0xef,0xbb,0xbf)) {
             $date = substr($date, 3);
