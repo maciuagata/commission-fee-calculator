@@ -38,7 +38,7 @@ class CalculateCommissionFee {
         }
     }
     
-    // User identify
+    // User identify: natural and legal 
     public function manageNaturalPerson($userData, $allUsersData) {
         if("cash_in" == $userData[3]) {
             $this->manageCashIn($userData);
@@ -59,7 +59,7 @@ class CalculateCommissionFee {
         }
     }
 
-    // Manage cash in operation, cash in is the same for both user types
+    // Manage cash in procedure, cash in is the same for both user types
     public function manageCashIn($userData) {
         
         $calculatedCommissionFee = ($userData[4] * $this->commissionFeeCashIn) / 100;
@@ -67,9 +67,9 @@ class CalculateCommissionFee {
         // convert maxCommissionFee -> 5Eur to descriped currencies (if it's Eur, method return the same value -> 5Eur)
         $maxCommissionFee = $this->currencyConverter($this->maxCommissionFeeInEuroCashIn, $userData[5]);
         
-        // Checking if calculatedCommissionFee is not more than maxCommissionFee
+        // Check if calculatedCommissionFee is not more than maxCommissionFee
         if($calculatedCommissionFee < $maxCommissionFee) {
-            // if not more, it's rounded to smallest currency item to upper bound (for example: 0.023Eur to 0.03Eur)
+            // if less, it's rounded to smallest currency item to upper bound (for example: 0.023Eur to 0.03Eur)
             $result = $calculatedCommissionFee;
             $result = number_format(ceil($result * 100) / 100, 2, '.', '');
         } else {
