@@ -17,7 +17,7 @@ class CalculateCommissionFee {
     private $freeOfChargeAmount = 1000;
     private $commissionFeesResult= [];
     
-   // start calculate data
+  
     public function inputDataInFile($file) {
         $input = new CsvReader;
         $inputData = $input->readCsv($file);
@@ -94,7 +94,7 @@ class CalculateCommissionFee {
             $result = $calculatedCommissionFee;
             $result = number_format(ceil($result * 100) / 100, 2, '.', '');
         } else {
-             // if not more, result of commission fee will be 0.50Eur
+             // if less, result of commission fee will be 0.50Eur
             $result = number_format($minCommissionFee, 2, '.', '');
         }
         $this->commissionFeesResult[] = $result;
