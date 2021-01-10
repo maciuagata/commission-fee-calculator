@@ -84,12 +84,12 @@ class CalculateCommissionFee {
         
         $calculatedCommissionFee = ($userData[4] * $this->commissionFeeCashOut) / 100;
 
-        // convert minCommissionFee -> 0.5Eur to descriped currencies (if it's Eur, method return the same value -> 0.5Eur)
+        // convert minCommissionFee -> 0.5Eur to descriped currencies 
         $minCommissionFee = $this->currencyConverter($this->minCommissionFeeInEuroCashOut, $userData[5]);
 
         // Checking if calculatedCommissionFee is more than minCommissionFee
         if($calculatedCommissionFee > $minCommissionFee) {
-            // if more, it's rounded to smallest currency item to upper bound (for example: 0.523Eur to 0.53Eur)
+            // if more, it's rounded to smallest currency item to upper bound
             //ceil - round numbers
             $result = $calculatedCommissionFee;
             $result = number_format(ceil($result * 100) / 100, 2, '.', '');
